@@ -11,7 +11,11 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 export { SUPABASE_URL };
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Placeholder values keep `next build` working with no .env.local. Real queries fail until the values are set.
+export const supabase = createClient(
+  SUPABASE_URL || 'https://missing-supabase-url.invalid',
+  SUPABASE_ANON_KEY || 'missing-anon-key',
+);
 
 // ─── Model names ─────────────────────────────────────────
 // One place to change which Grok model the app talks to.
