@@ -111,11 +111,14 @@ The face scorer is optional: see [`scripts/scorer/README.md`](scripts/scorer/REA
 - Auto-generated names can collide.
 - There is no login. The database policies allow anon access, so do not expose a deployment on the public internet without auth in front.
 - Some older tabs (Publish, Carousel, Ads, Inspiration) are parked and hidden from the sidebar.
+- PNG and WebP outputs are re-encoded to JPEG, which drops their C2PA content credentials.
 - Two React Compiler lint rules are warnings, not errors, until older components are refactored.
 
 ## Responsible use
 
 The character is synthetic, and posts made with it carry the platform's AI label.
+Provider JPEG outputs are saved byte for byte, so any C2PA content credentials the provider sets stay in the file.
+There is no adult-content mode.
 This tool is not for copying a real person's likeness or a real person's content.
 
 ## License

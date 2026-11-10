@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { errorResponse, readJson } from '@/lib/http';
 import { uploadFile } from '@/lib/storage';
-import { stripImageMetadata } from '@/lib/strip-metadata';
+import { fetchImageAsJpeg } from '@/lib/fetch-image';
 import { assertSpendAllowed } from '@/lib/spend-guard';
 import { getProviderRouter } from '@/lib/providers';
 import { imageCost } from '@/lib/pricing';
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
           url = urls[0]; cost += imageCost('Nanobanana 2', 1).costUsd ?? 0.04;
         }
         if (!url) throw new Error('no image');
-        const clean = await stripImageMetadata(url);
+        const clean = await fetchImageAsJpeg(url);
         const path = `generated/${persona.id}/${slot.key}_${Date.now()}.jpg`;
         const publicUrl = await uploadFile('persona-datasets', path, clean);
         await supabase.from('dataset_images').insert({

@@ -137,7 +137,6 @@ export default function StudioRemixTab({ pendingRemixImage, onRemixImageConsumed
   const [showResDropdown, setShowResDropdown] = useState(false);
   const [showPersonaPicker, setShowPersonaPicker] = useState(false);
   const personaPickerRef = useRef<HTMLDivElement>(null);
-  const [nsfw, setNsfw] = useState(false);
   const aspectDropdownRef = useRef<HTMLDivElement>(null);
   const resDropdownRef = useRef<HTMLDivElement>(null);
   const modelDropdownRef = useRef<HTMLDivElement>(null);
@@ -1330,15 +1329,6 @@ export default function StudioRemixTab({ pendingRemixImage, onRemixImageConsumed
           {!loraChar && <ModelSettings fields={modelFields} values={modelParams} onChange={setModelParams} hide={['aspect_ratio', 'resolution']} />}
           {!loraChar && readyChars.length > 0 && <IdentityChip value={identity === 'lora' ? 'hybrid' : identity} onChange={setIdentity} modes={['hybrid', 'refs']} />}
 
-          {/* NSFW toggle (Seedream only) */}
-          {!isNanobananaModel && !loraChar && (
-            <button type="button" onClick={() => setNsfw(!nsfw)} style={{ padding: '5px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500, border: '1px solid #e5e7eb', background: 'var(--color-bg-surface)', color: nsfw ? 'var(--color-error, #dc3545)' : '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              <div style={{ width: 22, height: 12, borderRadius: 6, background: nsfw ? 'var(--color-error, #dc3545)' : '#ddd', position: 'relative', transition: 'background 150ms' }}>
-                <div style={{ position: 'absolute', top: 1.5, left: nsfw ? 11.5 : 1.5, width: 9, height: 9, borderRadius: '50%', background: '#fff', transition: 'left 150ms' }} />
-              </div>
-              NSFW
-            </button>
-          )}
 
           {/* Enhance with AI toggle */}
           <button type="button" onClick={() => setEnhancePrompt(!enhancePrompt)} style={{ padding: '5px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500, border: '1px solid #e5e7eb', background: 'var(--color-bg-surface)', color: enhancePrompt ? '#1D4ED8' : '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>

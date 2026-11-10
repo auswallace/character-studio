@@ -19,7 +19,6 @@ interface PersonaRow {
   traits: string | null;
   api_provider: string | null;
   prompt_provider: string | null;
-  enable_nsfw: boolean | null;
   num_images: number | null;
   body_traits?: string | null;
   active_character_id?: string | null;
@@ -58,7 +57,6 @@ export async function GET() {
         traits: row.traits || '',
         apiProvider: row.api_provider || '',
         numImages: row.num_images || 4,
-        nsfw: row.enable_nsfw || false,
         promptProvider: row.prompt_provider || '',
         bodyTraits: row.body_traits || '',
         activeCharacterId: row.active_character_id || null,
@@ -92,7 +90,6 @@ export async function PATCH(request: NextRequest) {
       traits,
       bodyTraits,
       promptProvider,
-      nsfw,
       replaceFaceRefs,
       replaceBodyRefs,
     } = body as {
@@ -100,7 +97,6 @@ export async function PATCH(request: NextRequest) {
       traits?: string;
       bodyTraits?: string;
       promptProvider?: string;
-      nsfw?: boolean;
       replaceFaceRefs?: ImageReplacement[];
       replaceBodyRefs?: ImageReplacement[];
     };
@@ -116,7 +112,6 @@ export async function PATCH(request: NextRequest) {
     if (traits !== undefined) textFields.traits = traits;
     if (bodyTraits !== undefined) textFields.body_traits = String(bodyTraits).slice(0, 2000);
     if (promptProvider !== undefined) textFields.prompt_provider = promptProvider;
-    if (nsfw !== undefined) textFields.enable_nsfw = nsfw;
 
     if (Object.keys(textFields).length > 0) {
       const { error } = await supabase

@@ -9,7 +9,6 @@ CREATE TABLE personas (
   traits TEXT,
   api_provider TEXT DEFAULT 'Wavespeed',
   prompt_provider TEXT DEFAULT 'Grok',
-  enable_nsfw BOOLEAN DEFAULT false,
   num_images INTEGER DEFAULT 4,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()

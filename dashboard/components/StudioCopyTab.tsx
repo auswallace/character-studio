@@ -21,7 +21,6 @@ interface Persona {
   imageModel?: string;
   imageSize?: string;
   numImages?: number;
-  nsfw?: boolean;
   activeCharacterId?: string | null;
 }
 
@@ -119,7 +118,6 @@ export default function StudioCopyTab({ onRemixImage, onSendToCarousel, pendingC
   const personaPickerRef = useRef<HTMLDivElement>(null);
   const [gridColumns, setGridColumns] = useState(4);
   const [numImages, setNumImages] = useState(2);
-  const [nsfw, setNsfw] = useState(false);
 
   const [notes, setNotes] = useState('');
   const [refImagePreview, setRefImagePreview] = useState<string | null>(null);
@@ -471,7 +469,6 @@ export default function StudioCopyTab({ onRemixImage, onSendToCarousel, pendingC
       model: loraChar ? loraChar.name : currentModel.name,
       imageModel: currentModel.name,
       numImages: loraChar ? Math.min(numImages, 4) : numImages,
-      nsfw,
       notes,
       refImageBase64,
       resolution: isNanobananaModel && !loraChar ? resolution : undefined,
@@ -509,7 +506,6 @@ export default function StudioCopyTab({ onRemixImage, onSendToCarousel, pendingC
     imageModel?: string;
     characterId?: string;
     numImages: number;
-    nsfw: boolean;
     notes: string;
     refImageBase64: string | null;
     resolution?: '1k' | '2k' | '4k';
@@ -533,7 +529,6 @@ export default function StudioCopyTab({ onRemixImage, onSendToCarousel, pendingC
           persona: snapshot.persona,
           imageModel: snapshot.imageModel || snapshot.model,
           numImages: snapshot.numImages,
-          nsfw: snapshot.nsfw,
           resolution: snapshot.resolution,
           aspectRatio: snapshot.aspectRatio,
           params: snapshot.params,
@@ -1553,54 +1548,6 @@ export default function StudioCopyTab({ onRemixImage, onSendToCarousel, pendingC
             <IdentityChip value={identity === 'lora' ? 'hybrid' : identity} onChange={setIdentity} modes={['hybrid', 'refs']} />
           )}
 
-          {/* ── NSFW toggle (Seedream only) ── */}
-          {!isNanobananaModel && !loraChar && (
-            <button
-              type="button"
-              onClick={() => setNsfw(!nsfw)}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 10,
-                fontSize: 12,
-                fontWeight: 500,
-                border: '1px solid #e5e7eb',
-                background: 'var(--color-bg-surface)',
-                color: nsfw ? 'var(--color-error, #dc3545)' : '#555',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                fontFamily: 'inherit',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              <div
-                style={{
-                  width: 22,
-                  height: 12,
-                  borderRadius: 6,
-                  background: nsfw ? 'var(--color-error, #dc3545)' : '#ddd',
-                  position: 'relative',
-                  transition: 'background 150ms',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 1.5,
-                    left: nsfw ? 11.5 : 1.5,
-                    width: 9,
-                    height: 9,
-                    borderRadius: '50%',
-                    background: '#fff',
-                    transition: 'left 150ms',
-                  }}
-                />
-              </div>
-              NSFW
-            </button>
-          )}
 
         </div>
         </div>

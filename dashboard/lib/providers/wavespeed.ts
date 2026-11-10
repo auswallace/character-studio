@@ -6,7 +6,7 @@
 //
 // This class does NOT:
 //   - Access Supabase (no database saves)
-//   - Call stripImageMetadata() (post-processing stays in routes)
+//   - Call fetchImageAsJpeg() (post-processing stays in routes)
 //   - Write SSE events directly (uses onImage/onProgress callbacks)
 //
 // This class DOES:

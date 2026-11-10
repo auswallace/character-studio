@@ -15,7 +15,7 @@ import { createHash } from 'crypto';
 import { supabase, apiKeys } from '@/lib/supabase';
 import { uploadFile } from '@/lib/storage';
 import { assertSafeUrl } from '@/lib/safe-url';
-import { stripImageMetadata } from '@/lib/strip-metadata';
+import { fetchImageAsJpeg } from '@/lib/fetch-image';
 import { runWavespeedJob } from '@/lib/wavespeed-poll';
 
 const ENDPOINT = 'https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/edit';
@@ -52,7 +52,7 @@ export async function deidentifyScene(sceneUrl: string, aspectRatio?: string): P
   if (aspectRatio) body.aspect_ratio = aspectRatio;
 
   const job = await runWavespeedJob({ endpoint: ENDPOINT, body, apiKey: apiKeys.wavespeed, tag: 'deidentify', label: 'Nano Banana 2.1 mannequin', pollIntervalMs: 3000, maxPolls: 60 });
-  const clean = await stripImageMetadata(job.outputs[0]);
+  const clean = await fetchImageAsJpeg(job.outputs[0]);
   const url = await uploadFile(BUCKET, path, clean, 'image/jpeg');
   console.log(`[deidentify] ${key}: mannequin saved (${(clean.length / 1024).toFixed(0)} KB)`);
   return { url, cached: false, costUsd: DEIDENTIFY_COST_USD };

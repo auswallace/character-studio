@@ -3,7 +3,7 @@ import { assertSpendAllowed, SpendCapError } from '@/lib/spend-guard';
 import { scoreRecordInBackground } from '@/lib/scorer';
 import { supabase, apiKeys, GROK_TEXT_MODEL } from '@/lib/supabase';
 import { uploadFile } from '@/lib/storage';
-import { stripImageMetadata } from '@/lib/strip-metadata';
+import { fetchImageAsJpeg } from '@/lib/fetch-image';
 import { getTemplate, TEMPLATE_KEYS } from '@/lib/prompt-templates';
 import { getProviderRouter, MODEL_NAMES, WavespeedGenerationResult, aspectRatioToSize, calculateAspectRatio } from '@/lib/providers';
 
@@ -411,7 +411,7 @@ export async function POST(request: NextRequest) {
           console.log(`[carousel] Stripping metadata from ${allImageUrls.length} images...`);
           await Promise.allSettled(allImageUrls.map(async ({ url: imgUrl, index: i }) => {
             try {
-              const cleanBuffer = await stripImageMetadata(imgUrl);
+              const cleanBuffer = await fetchImageAsJpeg(imgUrl);
               console.log(`[carousel] Image ${i + 1}/${allImageUrls.length} metadata stripped (${(cleanBuffer.length / 1024).toFixed(0)} KB)`);
               const storagePath = `${rid}/image_${i + 1}.jpg`;
               const publicUrl = await uploadFile('carousel-images', storagePath, cleanBuffer);

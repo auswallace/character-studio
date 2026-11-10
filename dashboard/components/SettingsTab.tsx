@@ -22,7 +22,6 @@ interface Persona {
   bodyTraits?: string;
   apiProvider: string;
   numImages: number;
-  nsfw: boolean;
   promptProvider: string;
 }
 
@@ -273,7 +272,6 @@ export default function SettingsTab() {
     if (editBodyTraits !== (currentPersona.bodyTraits || '')) return true;
     const currentProvider = currentPersona.promptProvider?.toLowerCase()?.includes('grok') ? 'Grok' : 'Gemini';
     if (editPromptProvider !== currentProvider) return true;
-    // nsfw is now controlled only from Image Copy tab, not Settings
     if (Object.keys(imageReplacements).length > 0) return true;
     return false;
   }
@@ -292,7 +290,6 @@ export default function SettingsTab() {
         traits: editTraits,
         bodyTraits: editBodyTraits,
         promptProvider: editPromptProvider,
-        // nsfw removed — controlled only from Image Copy tab
       };
 
       // Collect image replacements
@@ -539,18 +536,6 @@ export default function SettingsTab() {
             <option value="seedream-4.5">Seedream 4.5</option>
             <option value="seedream-4.0">Seedream 4.0</option>
           </select>
-        </div>
-
-        {/* NSFW Mode */}
-        <div className="flex items-center justify-between" style={{ maxWidth: 320 }}>
-          <div>
-            <label className="block" style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)' }}>NSFW Mode</label>
-            <p style={{ fontSize: 11, color: '#999', marginTop: 2 }}>Enable adult content generation</p>
-          </div>
-          <ToggleSwitch
-            checked={currentPersona?.nsfw ?? false}
-            onChange={() => {/* nsfw controlled from Image Copy tab */}}
-          />
         </div>
 
         {/* Default Image Count */}

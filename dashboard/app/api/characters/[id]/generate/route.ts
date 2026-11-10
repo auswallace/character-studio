@@ -4,7 +4,7 @@ import { errorResponse, readJson } from '@/lib/http';
 import { uploadFile } from '@/lib/storage';
 import { assertSpendAllowed } from '@/lib/spend-guard';
 import { scoreRecordInBackground } from '@/lib/scorer';
-import { stripImageMetadata } from '@/lib/strip-metadata';
+import { fetchImageAsJpeg } from '@/lib/fetch-image';
 import { deidentifyScene } from '@/lib/deidentify';
 import { INFERENCE, falRun, type CharacterBase } from '@/lib/characters/fal';
 import { buildInput } from '@/lib/models/manifest';
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const saved: string[] = [];
     for (let i = 0; i < urls.length; i++) {
       try {
-        const clean = await stripImageMetadata(urls[i]);
+        const clean = await fetchImageAsJpeg(urls[i]);
         const path = `${gen.id}/image_${i + 1}.jpg`;
         const url = await uploadFile('generated-images', path, clean, 'image/jpeg');
         await supabase.from('generation_images').insert({ generation_id: gen.id, storage_path: path, url, filename: `image_${i + 1}.jpg`, size: clean.length, mime_type: 'image/jpeg', sort_order: i });

@@ -4,7 +4,7 @@ import { scoreRecordInBackground } from '@/lib/scorer';
 import { imageCost } from '@/lib/pricing';
 import { supabase, apiKeys, GROK_VISION_MODEL, GROK_TEXT_MODEL } from '@/lib/supabase';
 import { uploadFile } from '@/lib/storage';
-import { stripImageMetadata } from '@/lib/strip-metadata';
+import { fetchImageAsJpeg } from '@/lib/fetch-image';
 import { getTemplate, TEMPLATE_KEYS } from '@/lib/prompt-templates';
 import { getProviderRouter, MODEL_NAMES, WavespeedGenerationResult, aspectRatioToSize } from '@/lib/providers';
 import { activeCharacterFor, generateWithCharacterGated, characterCanEdit, characterReferenceStills, isWavespeedEdit } from '@/lib/characters/active';
@@ -30,7 +30,6 @@ interface PersonaRow {
   traits: string | null;
   api_provider: string | null;
   prompt_provider: string | null;
-  enable_nsfw: boolean | null;
   num_images: number | null;
   persona_refs: PersonaRef[];
 }
@@ -242,13 +241,12 @@ async function analyzeImageWithGemini(
 async function generateTextPromptWithGrok(
   traits: string,
   notes: string,
-  enableNSFW: boolean,
   modelName?: string,
 ): Promise<string> {
   const grokKey = apiKeys.grok;
   if (!grokKey) throw new Error('Grok API key not configured');
 
-  let prompt = buildTextOnlyTemplate(traits, notes, enableNSFW);
+  let prompt = buildTextOnlyTemplate(traits, notes);
 
   // Append model-specific guidance
   if (modelName) {
@@ -285,13 +283,12 @@ async function generateTextPromptWithGrok(
 async function generateTextPromptWithGemini(
   traits: string,
   notes: string,
-  enableNSFW: boolean,
   modelName?: string,
 ): Promise<string> {
   const geminiKey = apiKeys.gemini;
   if (!geminiKey) throw new Error('Gemini API key not configured');
 
-  let prompt = buildTextOnlyTemplate(traits, notes, enableNSFW);
+  let prompt = buildTextOnlyTemplate(traits, notes);
 
   // Append model-specific guidance
   if (modelName) {
@@ -327,7 +324,7 @@ async function generateTextPromptWithGemini(
   return text.trim();
 }
 
-function buildTextOnlyTemplate(traits: string, notes: string, enableNSFW: boolean): string {
+function buildTextOnlyTemplate(traits: string, notes: string): string {
   return `You are an expert at creating image generation prompts for AI models that use reference images.
 
 The AI model will receive 3 reference images:
@@ -338,7 +335,7 @@ Physical attributes of the subject: ${traits}
 
 The creator wants: ${notes || 'a natural, candid photo'}
 
-${enableNSFW ? 'NSFW MODE: Content restrictions are lifted. Use explicit, suggestive language for poses, clothing, body.' : 'Keep content safe for work.'}
+Keep content safe for work.
 
 Generate a SINGLE detailed prompt in this exact format:
 
@@ -382,7 +379,6 @@ export async function POST(request: NextRequest) {
     const { persona, promptNote, promptImage } = body;
     const uiModel = body.imageModel as string | undefined;
     const uiNumImages = body.numImages as number | undefined;
-    const uiNsfw = body.nsfw as boolean | undefined;
     const uiResolution = body.resolution as string | undefined;
     const uiAspectRatio = body.aspectRatio as string | undefined;
     const uiParams = (body.params && typeof body.params === 'object' ? body.params : {}) as Record<string, unknown>;   // provider field names; validated against the model manifest
@@ -439,7 +435,6 @@ export async function POST(request: NextRequest) {
     // MODEL_NAMES imported from @/lib/providers
     const rawModel = uiModel || 'nanobanana2';
     const imageModel = MODEL_NAMES[rawModel] || rawModel;
-    const enableNSFW = uiNsfw ?? false; // NSFW controlled only from Image Copy toggle, not persona settings
 
     let numImages = uiNumImages || personaRow.num_images || 2;
     const imageSize = aspectRatioToSize(uiAspectRatio || '9:16');
@@ -450,7 +445,7 @@ export async function POST(request: NextRequest) {
     }
 
     const promptProvider = personaRow.prompt_provider || 'Grok';
-    console.log(`[generate] Settings: ${imageModel}, ${numImages} images, ${imageSize}, NSFW=${enableNSFW}, prompt=${promptProvider}`);
+    console.log(`[generate] Settings: ${imageModel}, ${numImages} images, ${imageSize}, prompt=${promptProvider}`);
 
     // Step 2: Create Supabase Generation record
     const autoName = await getNextName(persona);
@@ -509,9 +504,6 @@ export async function POST(request: NextRequest) {
         finalTemplate += `\n\n⚠️ TARGETED EDIT FROM CREATOR — The creator wants to change ONLY the following about this image:\n"${promptNote.trim()}"\n\nCRITICAL: Apply ONLY this specific change. PRESERVE everything else exactly as you see it in the reference image — same pose, same body position, same framing, same camera angle, same background, same lighting, same expression, same composition. The ONLY difference in your prompt vs a straight description of the image should be the creator's requested change. Do NOT reinterpret, reimagine, or vary anything the creator didn't explicitly ask to change.`;
       }
 
-      if (enableNSFW) {
-        finalTemplate += `\n\nNSFW MODE ENABLED — Content restrictions are lifted. You may use explicit, suggestive, and sensual language when describing the subject's pose, body, clothing (or lack thereof), and overall mood. Be descriptive and uninhibited with provocative details — cleavage, skin exposure, body curves, seductive expressions, intimate poses, revealing outfits, etc. Do NOT censor or soften descriptions. The goal is alluring, provocative content.`;
-      }
 
       // Determine mime type from base64 header or default to jpeg
       const mimeType = 'image/jpeg';
@@ -563,9 +555,9 @@ export async function POST(request: NextRequest) {
 
       try {
         if (promptProvider === 'Grok') {
-          prompt = await generateTextPromptWithGrok(traits, promptNote || '', enableNSFW, imageModel);
+          prompt = await generateTextPromptWithGrok(traits, promptNote || '', imageModel);
         } else {
-          prompt = await generateTextPromptWithGemini(traits, promptNote || '', enableNSFW, imageModel);
+          prompt = await generateTextPromptWithGemini(traits, promptNote || '', imageModel);
         }
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : String(err);
@@ -657,7 +649,7 @@ export async function POST(request: NextRequest) {
           console.log(`[generate] Stripping metadata from ${allImageUrls.length} images...`);
           await Promise.allSettled(allImageUrls.map(async ({ url: imgUrl, index: i }) => {
             try {
-              const cleanBuffer = await stripImageMetadata(imgUrl);
+              const cleanBuffer = await fetchImageAsJpeg(imgUrl);
               console.log(`[generate] Image ${i + 1}/${allImageUrls.length} metadata stripped (${(cleanBuffer.length / 1024).toFixed(0)} KB)`);
               const storagePath = `${rid}/image_${i + 1}.jpg`;
               const publicUrl = await uploadFile('generated-images', storagePath, cleanBuffer);
