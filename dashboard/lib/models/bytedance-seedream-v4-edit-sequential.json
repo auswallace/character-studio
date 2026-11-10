@@ -1,0 +1,51 @@
+{
+  "endpoint": "bytedance/seedream-v4/edit-sequential",
+  "provider": "wavespeed",
+  "fetched_at": "2026-11-06T15:05:00Z",
+  "source": "https://wavespeed.ai/docs/docs-api/bytedance/bytedance-seedream-v4-edit-sequential",
+  "manifest": {
+    "required": [
+      "images",
+      "prompt"
+    ],
+    "fields": {
+      "images": {
+        "type": "array",
+        "items": "string",
+        "max": 10,
+        "desc": "Reference images (max 10). References + outputs must total 15 or fewer."
+      },
+      "prompt": {
+        "type": "string",
+        "desc": "Prompt. Must state the number of images when max_images > 1."
+      },
+      "size": {
+        "type": "string",
+        "desc": "width*height. Omit for automatic. 3,686,400 to 16,777,216 pixels, ratio 1:16 to 16:1."
+      },
+      "max_images": {
+        "type": "integer",
+        "default": 1,
+        "min": 1,
+        "max": 15,
+        "desc": "Images to generate (up to 15)."
+      },
+      "output_format": {
+        "type": "string",
+        "default": "jpeg",
+        "enum": [
+          "jpeg",
+          "png"
+        ]
+      },
+      "enable_base64_output": {
+        "type": "boolean",
+        "default": false
+      },
+      "enable_sync_mode": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  }
+}

@@ -1,0 +1,515 @@
+{
+  "endpoint": "blackforestlabs/flux-3/klein/base/text-to-image/lora",
+  "provider": "fal",
+  "fetched_at": "2026-11-06T14:40:11.144Z",
+  "schema": {
+    "input": "Flux3KleinBaseTextToImageLoraInput",
+    "components": {
+      "QueueStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_QUEUE",
+              "IN_PROGRESS",
+              "COMPLETED"
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "description": "The request id."
+          },
+          "response_url": {
+            "type": "string",
+            "description": "The response url."
+          },
+          "status_url": {
+            "type": "string",
+            "description": "The status url."
+          },
+          "cancel_url": {
+            "type": "string",
+            "description": "The cancel url."
+          },
+          "logs": {
+            "type": "object",
+            "description": "The logs.",
+            "additionalProperties": true
+          },
+          "metrics": {
+            "type": "object",
+            "description": "The metrics.",
+            "additionalProperties": true
+          },
+          "queue_position": {
+            "type": "integer",
+            "description": "The queue position."
+          }
+        },
+        "required": [
+          "status",
+          "request_id"
+        ]
+      },
+      "Flux3KleinBaseTextToImageLoraInput": {
+        "required": [
+          "prompt"
+        ],
+        "title": "TextToImageLoRAInput",
+        "x-fal-order-properties": [
+          "loras",
+          "prompt",
+          "enable_prompt_expansion",
+          "seed",
+          "num_images",
+          "enable_safety_checker",
+          "output_format",
+          "sync_mode",
+          "negative_prompt",
+          "num_inference_steps",
+          "guidance_scale",
+          "image_size",
+          "bounding_boxes"
+        ],
+        "type": "object",
+        "properties": {
+          "loras": {
+            "items": {
+              "$ref": "#/components/schemas/LoRAInput"
+            },
+            "maxItems": 3,
+            "default": [],
+            "description": "LoRA weights to apply (maximum 3).",
+            "title": "Loras",
+            "type": "array"
+          },
+          "sync_mode": {
+            "description": "If `True`, the media will be returned as a data URI and the output data won't be available in the request history.",
+            "default": false,
+            "title": "Sync Mode",
+            "type": "boolean"
+          },
+          "guidance_scale": {
+            "maximum": 20,
+            "default": 3.5,
+            "description": "How closely the model should stick to your prompt (classifier-free guidance).",
+            "minimum": 0,
+            "title": "Guidance Scale",
+            "type": "number"
+          },
+          "enable_prompt_expansion": {
+            "description": "If set to true, the prompt is expanded into a detailed caption (grounded in the reference images when editing) before generation.",
+            "default": true,
+            "title": "Enable Prompt Expansion",
+            "type": "boolean"
+          },
+          "num_inference_steps": {
+            "maximum": 50,
+            "default": 50,
+            "description": "The number of inference steps to perform.",
+            "minimum": 4,
+            "title": "Number of Inference Steps",
+            "type": "integer"
+          },
+          "seed": {
+            "description": "The same seed and the same prompt given to the same version of the model will output the same image every time.",
+            "title": "Seed",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bounding_boxes": {
+            "description": "Optional layout: draw each described object inside its box. Box edges are fractions of the image size, with (0, 0) at the top-left. Name boxes in the prompt by label, e.g. `A red fox <fox> sits under a red umbrella <umbrella>`.",
+            "title": "Bounding Boxes",
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/BoundingBox"
+                },
+                "maxItems": 32,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "negative_prompt": {
+            "description": "The negative prompt to use. Use it to address details that you don't want in the image.",
+            "default": "",
+            "title": "Negative Prompt",
+            "type": "string"
+          },
+          "output_format": {
+            "description": "The format of the generated image.",
+            "default": "png",
+            "title": "Output Format",
+            "type": "string",
+            "enum": [
+              "jpeg",
+              "png",
+              "webp"
+            ]
+          },
+          "image_size": {
+            "description": "The size of the generated image. Each side can be 256 to 4096 pixels (native 4K).",
+            "default": "square_hd",
+            "title": "Image Size",
+            "x-fal": {
+              "min_width": 256,
+              "max_area": 16777216,
+              "min_height": 256,
+              "max_height": 4096,
+              "max_width": 4096,
+              "multiple_of": 16
+            },
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImageSize"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "square_hd",
+                  "square",
+                  "portrait_4_3",
+                  "portrait_16_9",
+                  "landscape_4_3",
+                  "landscape_16_9"
+                ]
+              }
+            ]
+          },
+          "prompt": {
+            "examples": [
+              "A red fox standing in fresh snow at sunrise, its breath visible in the cold air. Soft golden light rakes across the snowfield from the left, pine forest softly blurred in the background, shot at eye level with a telephoto lens."
+            ],
+            "description": "The prompt to generate an image from. The model is trained on detailed captions: describe framing, subject, background and lighting.",
+            "title": "Prompt",
+            "type": "string"
+          },
+          "num_images": {
+            "maximum": 4,
+            "default": 1,
+            "description": "The number of images to generate.",
+            "minimum": 1,
+            "title": "Number of Images",
+            "type": "integer"
+          },
+          "enable_safety_checker": {
+            "description": "If set to true, the safety checker will be enabled.",
+            "default": true,
+            "title": "Enable Safety Checker",
+            "type": "boolean"
+          }
+        }
+      },
+      "Flux3KleinBaseTextToImageLoraOutput": {
+        "required": [
+          "images",
+          "timings",
+          "seed",
+          "has_nsfw_concepts",
+          "prompt"
+        ],
+        "title": "Output",
+        "x-fal-order-properties": [
+          "images",
+          "timings",
+          "seed",
+          "has_nsfw_concepts",
+          "prompt"
+        ],
+        "type": "object",
+        "properties": {
+          "seed": {
+            "description": "Seed used to generate the first image.",
+            "title": "Seed",
+            "type": "integer"
+          },
+          "timings": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "The timings of the generation process.",
+            "title": "Timings",
+            "type": "object"
+          },
+          "prompt": {
+            "description": "The prompt used for generating the image.",
+            "title": "Prompt",
+            "type": "string"
+          },
+          "has_nsfw_concepts": {
+            "items": {
+              "type": "boolean"
+            },
+            "description": "Whether the generated images contain NSFW concepts.",
+            "title": "Has Nsfw Concepts",
+            "type": "array"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/ImageFile"
+            },
+            "description": "The generated images.",
+            "title": "Images",
+            "type": "array"
+          }
+        }
+      },
+      "LoRAInput": {
+        "required": [
+          "path"
+        ],
+        "title": "LoRAInput",
+        "x-fal-order-properties": [
+          "path",
+          "scale"
+        ],
+        "type": "object",
+        "properties": {
+          "scale": {
+            "maximum": 4,
+            "default": 1,
+            "description": "Scale factor for LoRA application (0.0 to 4.0).",
+            "minimum": 0,
+            "title": "Scale",
+            "type": "number"
+          },
+          "path": {
+            "description": "URL to a FLUX 3 Klein LoRA (.safetensors), e.g. from flux-3-image-klein-trainer.",
+            "title": "Path",
+            "type": "string"
+          }
+        }
+      },
+      "BoundingBox": {
+        "required": [
+          "description",
+          "box"
+        ],
+        "title": "BoundingBox",
+        "x-fal-order-properties": [
+          "label",
+          "description",
+          "box"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "examples": [
+              "fox"
+            ],
+            "description": "Short name for the object in this box, e.g. `fox`. Write `<fox>` in the prompt to tie the box to those words; a box the prompt doesn't name is added to the scene. Defaults to `obj_<n>`.",
+            "title": "Label",
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "examples": [
+              "a red fox with thick orange fur and a white-tipped tail"
+            ],
+            "description": "What to draw in this box: the object and its look.",
+            "title": "Description",
+            "type": "string",
+            "maxLength": 500
+          },
+          "box": {
+            "$ref": "#/components/schemas/Box",
+            "description": "Where the object goes in the output image."
+          }
+        }
+      },
+      "ImageSize": {
+        "title": "ImageSize",
+        "x-fal-order-properties": [
+          "width",
+          "height"
+        ],
+        "type": "object",
+        "properties": {
+          "height": {
+            "maximum": 14142,
+            "default": 512,
+            "exclusiveMinimum": 0,
+            "title": "Height",
+            "description": "The height of the generated image.",
+            "type": "integer"
+          },
+          "width": {
+            "maximum": 14142,
+            "default": 512,
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "description": "The width of the generated image.",
+            "type": "integer"
+          }
+        }
+      },
+      "ImageFile": {
+        "properties": {
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The height of the image",
+            "title": "Height"
+          },
+          "file_size": {
+            "examples": [
+              4404019
+            ],
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The size of the file in bytes.",
+            "title": "File Size"
+          },
+          "url": {
+            "description": "The URL where the file can be downloaded from.",
+            "type": "string",
+            "title": "Url"
+          },
+          "file_name": {
+            "examples": [
+              "z9RV14K95DvU.png"
+            ],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The name of the file. It will be auto-generated if not provided.",
+            "title": "File Name"
+          },
+          "content_type": {
+            "examples": [
+              "image/png"
+            ],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The mime type of the file.",
+            "title": "Content Type"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The width of the image",
+            "title": "Width"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object",
+        "title": "ImageFile",
+        "x-fal-order-properties": [
+          "url",
+          "content_type",
+          "file_name",
+          "file_size",
+          "width",
+          "height"
+        ]
+      },
+      "Box": {
+        "required": [
+          "x_min",
+          "y_min",
+          "x_max",
+          "y_max"
+        ],
+        "title": "Box",
+        "x-fal-order-properties": [
+          "x_min",
+          "y_min",
+          "x_max",
+          "y_max"
+        ],
+        "type": "object",
+        "properties": {
+          "x_max": {
+            "maximum": 1,
+            "examples": [
+              0.7
+            ],
+            "description": "Right edge as a fraction of the image width (0-1).",
+            "minimum": 0,
+            "title": "X Max",
+            "type": "number"
+          },
+          "x_min": {
+            "maximum": 1,
+            "examples": [
+              0.3
+            ],
+            "description": "Left edge as a fraction of the image width (0-1).",
+            "minimum": 0,
+            "title": "X Min",
+            "type": "number"
+          },
+          "y_min": {
+            "maximum": 1,
+            "examples": [
+              0.4
+            ],
+            "description": "Top edge as a fraction of the image height (0-1).",
+            "minimum": 0,
+            "title": "Y Min",
+            "type": "number"
+          },
+          "y_max": {
+            "maximum": 1,
+            "examples": [
+              0.9
+            ],
+            "description": "Bottom edge as a fraction of the image height (0-1).",
+            "minimum": 0,
+            "title": "Y Max",
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

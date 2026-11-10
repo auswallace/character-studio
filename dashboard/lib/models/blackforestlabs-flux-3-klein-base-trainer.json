@@ -1,0 +1,198 @@
+{
+  "endpoint": "blackforestlabs/flux-3/klein/base/trainer",
+  "provider": "fal",
+  "fetched_at": "2026-11-06T14:40:53.880Z",
+  "schema": {
+    "input": "Flux3KleinBaseTrainerInput",
+    "components": {
+      "QueueStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_QUEUE",
+              "IN_PROGRESS",
+              "COMPLETED"
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "description": "The request id."
+          },
+          "response_url": {
+            "type": "string",
+            "description": "The response url."
+          },
+          "status_url": {
+            "type": "string",
+            "description": "The status url."
+          },
+          "cancel_url": {
+            "type": "string",
+            "description": "The cancel url."
+          },
+          "logs": {
+            "type": "object",
+            "description": "The logs.",
+            "additionalProperties": true
+          },
+          "metrics": {
+            "type": "object",
+            "description": "The metrics.",
+            "additionalProperties": true
+          },
+          "queue_position": {
+            "type": "integer",
+            "description": "The queue position."
+          }
+        },
+        "required": [
+          "status",
+          "request_id"
+        ]
+      },
+      "Flux3KleinBaseTrainerInput": {
+        "x-fal-order-properties": [
+          "images_data_url",
+          "trigger_phrase",
+          "steps",
+          "learning_rate",
+          "resolution"
+        ],
+        "required": [
+          "images_data_url"
+        ],
+        "properties": {
+          "trigger_phrase": {
+            "default": "",
+            "description": "Caption for every image that ships no caption file. Required when any image lacks one.",
+            "title": "Trigger Phrase",
+            "type": "string"
+          },
+          "resolution": {
+            "default": 1024,
+            "description": "Training resolution. Images keep their aspect ratio and are resized to about resolution x resolution pixels.",
+            "title": "Resolution",
+            "enum": [
+              512,
+              768,
+              1024
+            ],
+            "type": "integer"
+          },
+          "steps": {
+            "default": 1000,
+            "minimum": 100,
+            "maximum": 10000,
+            "description": "Number of training steps.",
+            "title": "Steps",
+            "type": "integer"
+          },
+          "learning_rate": {
+            "default": 0.0001,
+            "maximum": 0.01,
+            "description": "Learning rate of the LoRA parameters.",
+            "title": "Learning Rate",
+            "minimum": 0.000001,
+            "type": "number"
+          },
+          "images_data_url": {
+            "description": "URL to a .zip archive of training images (PNG/JPG/JPEG/WebP). An image named ROOT.EXT pairs with an optional caption file ROOT.txt; images without one use `trigger_phrase` as their caption.",
+            "title": "Images Data Url",
+            "type": "string"
+          }
+        },
+        "title": "Input",
+        "type": "object"
+      },
+      "Flux3KleinBaseTrainerOutput": {
+        "x-fal-order-properties": [
+          "lora_file",
+          "config_file"
+        ],
+        "required": [
+          "lora_file",
+          "config_file"
+        ],
+        "properties": {
+          "lora_file": {
+            "$ref": "#/components/schemas/File",
+            "description": "URL to the trained LoRA weights."
+          },
+          "config_file": {
+            "$ref": "#/components/schemas/File",
+            "description": "URL to the training configuration."
+          }
+        },
+        "title": "Output",
+        "type": "object"
+      },
+      "File": {
+        "required": [
+          "url"
+        ],
+        "title": "File",
+        "type": "object",
+        "x-fal-order-properties": [
+          "url",
+          "content_type",
+          "file_name",
+          "file_size"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL where the file can be downloaded from.",
+            "title": "Url"
+          },
+          "file_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The size of the file in bytes.",
+            "examples": [
+              4404019
+            ],
+            "title": "File Size"
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The mime type of the file.",
+            "examples": [
+              "image/png"
+            ],
+            "title": "Content Type"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The name of the file. It will be auto-generated if not provided.",
+            "examples": [
+              "z9RV14K95DvU.png"
+            ],
+            "title": "File Name"
+          }
+        }
+      }
+    }
+  }
+}

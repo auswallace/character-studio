@@ -1,0 +1,203 @@
+{
+  "endpoint": "fal-ai/flux-2-trainer-v2",
+  "provider": "fal",
+  "fetched_at": "2026-11-06T14:40:42.557Z",
+  "schema": {
+    "input": "Flux2TrainerV2Input",
+    "components": {
+      "QueueStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_QUEUE",
+              "IN_PROGRESS",
+              "COMPLETED"
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "description": "The request id."
+          },
+          "response_url": {
+            "type": "string",
+            "description": "The response url."
+          },
+          "status_url": {
+            "type": "string",
+            "description": "The status url."
+          },
+          "cancel_url": {
+            "type": "string",
+            "description": "The cancel url."
+          },
+          "logs": {
+            "type": "object",
+            "description": "The logs.",
+            "additionalProperties": true
+          },
+          "metrics": {
+            "type": "object",
+            "description": "The metrics.",
+            "additionalProperties": true
+          },
+          "queue_position": {
+            "type": "integer",
+            "description": "The queue position."
+          }
+        },
+        "required": [
+          "status",
+          "request_id"
+        ]
+      },
+      "Flux2TrainerV2Input": {
+        "properties": {
+          "image_data_url": {
+            "type": "string",
+            "description": "\n    URL to zip archive with images of a consistent style. Try to use at least 10 images, although more is better.\n\n    The zip can also contain a text file for each image. The text file should be named:\n    ROOT.txt\n    For example:\n    photo.txt\n\n    This text file can be used to specify the edit instructions for the image pair.\n\n    If no text file is provided, the default_caption will be used.\n\n    If no default_caption is provided, the training will fail.\n    ",
+            "title": "Image Data Url"
+          },
+          "learning_rate": {
+            "title": "Learning Rate",
+            "type": "number",
+            "description": "Learning rate applied to trainable parameters.",
+            "default": 0.00005
+          },
+          "default_caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Default caption to use when caption files are missing. If None, missing captions will cause an error.",
+            "title": "Default Caption"
+          },
+          "steps": {
+            "maximum": 20000,
+            "description": "Total number of training steps.",
+            "default": 1000,
+            "minimum": 100,
+            "multipleOf": 100,
+            "title": "Steps",
+            "type": "integer"
+          },
+          "output_lora_format": {
+            "title": "Output Lora Format",
+            "enum": [
+              "fal",
+              "comfy"
+            ],
+            "type": "string",
+            "description": "Dictates the naming scheme for the output weights",
+            "default": "fal"
+          }
+        },
+        "required": [
+          "image_data_url"
+        ],
+        "x-fal-order-properties": [
+          "image_data_url",
+          "steps",
+          "learning_rate",
+          "default_caption",
+          "output_lora_format"
+        ],
+        "type": "object",
+        "description": "V2 input with multi-resolution bucketing.",
+        "title": "InputT2IV2"
+      },
+      "Flux2TrainerV2Output": {
+        "required": [
+          "diffusers_lora_file",
+          "config_file"
+        ],
+        "x-fal-order-properties": [
+          "diffusers_lora_file",
+          "config_file"
+        ],
+        "type": "object",
+        "properties": {
+          "diffusers_lora_file": {
+            "description": "URL to the trained diffusers lora weights.",
+            "$ref": "#/components/schemas/File"
+          },
+          "config_file": {
+            "description": "URL to the configuration file for the trained model.",
+            "$ref": "#/components/schemas/File"
+          }
+        },
+        "title": "Output"
+      },
+      "File": {
+        "required": [
+          "url"
+        ],
+        "x-fal-order-properties": [
+          "url",
+          "content_type",
+          "file_name",
+          "file_size"
+        ],
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "examples": [
+              "z9RV14K95DvU.png"
+            ],
+            "title": "File Name",
+            "description": "The name of the file. It will be auto-generated if not provided."
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "examples": [
+              "image/png"
+            ],
+            "title": "Content Type",
+            "description": "The mime type of the file."
+          },
+          "url": {
+            "type": "string",
+            "description": "The URL where the file can be downloaded from.",
+            "title": "Url"
+          },
+          "file_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "examples": [
+              4404019
+            ],
+            "title": "File Size",
+            "description": "The size of the file in bytes."
+          }
+        },
+        "title": "File"
+      }
+    }
+  }
+}

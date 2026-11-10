@@ -1,0 +1,19 @@
+{
+  "endpoint": "wavespeed-ai/z-image-turbo/image-to-image-lora",
+  "provider": "wavespeed",
+  "fetched_at": "2026-11-06T14:45:00Z",
+  "source": "https://wavespeed.ai/docs/docs-api/wavespeed-ai/z-image-turbo-image-to-image-lora",
+  "manifest": {
+    "required": ["prompt", "image"],
+    "fields": {
+      "prompt":   { "type": "string", "desc": "The positive prompt for the generation." },
+      "image":    { "type": "string", "desc": "Reference image URL to guide the generation style or composition." },
+      "loras":    { "type": "array", "items": "LoRAInput", "max": 3, "desc": "List of LoRAs to apply (max 3)." },
+      "size":     { "type": "string", "default": "1024*1024", "desc": "width*height, each 256-1536." },
+      "strength": { "type": "number", "default": 0.6, "min": 0, "max": 1, "desc": "Higher = further from the input image." },
+      "seed":     { "type": "integer", "desc": "-1 = random." },
+      "output_format": { "type": "string", "default": "jpeg", "enum": ["jpeg", "png", "webp"] }
+    },
+    "subschemas": { "LoRAInput": { "path": { "type": "string" }, "scale": { "type": "number", "default": 1, "min": 0, "max": 4 } } }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "endpoint": "wavespeed-ai/wan-2.2/i2v-720p-lora",
+  "provider": "wavespeed",
+  "fetched_at": "2026-11-09T21:20:00Z",
+  "source": "https://wavespeed.ai/docs/docs-api/wavespeed-ai/wan-2.2-i2v-720p-lora",
+  "manifest": {
+    "required": ["prompt", "image"],
+    "fields": {
+      "prompt":          { "type": "string", "desc": "What happens in the clip." },
+      "image":           { "type": "string", "desc": "Start frame URL. Output follows its aspect ratio." },
+      "negative_prompt": { "type": "string" },
+      "last_image":      { "type": "string", "desc": "Optional end frame URL." },
+      "duration":        { "type": "integer", "default": 5, "min": 5, "max": 8, "desc": "5 or 8 seconds. $0.35 per 5 s, $0.56 for 8 s." },
+      "loras":            { "type": "array", "items": "LoraWeight", "max": 3, "desc": "Wan 2.2 LoRAs applied to both noise stages." },
+      "high_noise_loras": { "type": "array", "items": "LoraWeight", "max": 3, "desc": "LoRAs for the high-noise expert (motion, layout)." },
+      "low_noise_loras":  { "type": "array", "items": "LoraWeight", "max": 3, "desc": "LoRAs for the low-noise expert (detail, identity)." },
+      "seed":            { "type": "integer", "desc": "-1 for random." }
+    },
+    "subschemas": {
+      "LoraWeight": { "path": { "type": "string" }, "scale": { "type": "number", "default": 1, "min": 0, "max": 4 } }
+    }
+  }
+}

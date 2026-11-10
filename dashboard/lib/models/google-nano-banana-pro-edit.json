@@ -1,0 +1,58 @@
+{
+  "endpoint": "google/nano-banana-pro/edit",
+  "provider": "wavespeed",
+  "fetched_at": "2026-11-06T15:05:00Z",
+  "source": "https://wavespeed.ai/docs/docs-api/google/google-nano-banana-pro-edit",
+  "manifest": {
+    "required": [
+      "images",
+      "prompt"
+    ],
+    "fields": {
+      "images": {
+        "type": "array",
+        "items": "string",
+        "max": 14,
+        "desc": "Reference images to edit (max 14)."
+      },
+      "prompt": {
+        "type": "string",
+        "desc": "Text description of the desired edit."
+      },
+      "output_format": {
+        "type": "string",
+        "default": "png",
+        "enum": [
+          "png",
+          "jpeg"
+        ]
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "enum": [
+          "1:1",
+          "3:2",
+          "2:3",
+          "3:4",
+          "4:3",
+          "4:5",
+          "5:4",
+          "9:16",
+          "16:9",
+          "21:9"
+        ],
+        "desc": "Empty follows the input image."
+      },
+      "resolution": {
+        "type": "string",
+        "default": "1k",
+        "enum": [
+          "1k",
+          "2k",
+          "4k"
+        ],
+        "desc": "1k $0.14, 2k $0.14, 4k $0.24 per image."
+      }
+    }
+  }
+}
